@@ -1,90 +1,138 @@
-## Voice Chat Messenger Especially for Mute People along with Normal Users.
+---
+
+#### Voice Chat Messenger for Mute and Normal Users
 
 A real-time chat messenger built with Streamlit, featuring:
 
-Text messaging
+* Text messaging
+* Voice messages powered by Murf TextToSpeech
+* File & image storage in AWS S3
+* MySQL database for chat history and metadata
+* Supports **text + audio + file + image messages**
 
-Voice messages powered by Murf TextToSpeech
+## Features
 
-File & image Stored in AWS S3 bucket and shared
+### Secure User Login
 
-MySQL database for chat history & metadata
+* Users can register and log in with password encrypted using bcrypt.
 
-# Features
+### Text + Audio Messaging
 
-Secure User Login
+* Messages are stored as text and also converted to audio (via Murf TTS).
+* Makes the app especially useful for mute people, who can type and have their message delivered as speech.
 
-Users register & login with encrypted passwords.
+### File & Image Sharing
 
-Text + Audio Messaging (Messages are converted to audio )
+* Upload images, documents, or any file.
+* Files are securely stored in AWS S3 and shared via accessible URLs directly inside the chat.
 
-File & Image Sharing
+### Chat History
 
-Upload images, docs, or any file → Stored securely in AWS S3.
+* All messages, audio and file URLs are stored in MySQL.
+* Easy retrieval when users reopen the chat.
 
-Shared files are accessible directly inside the chat.
+### Room Creation Security Check
 
-Chat History
+* Chat rooms are created only if the peer exists.
+* Prevents ghost rooms (empty or unused rooms).
 
-All messages, audio links, and file URLs are stored in MySQL.
+---
 
-Easy retrieval when users reopen the chat.
+## Unique Features : What Makes My APP Different and Unique From Others
 
-Room Creation Security Check
+- **Text-to-Speech for mute users**:
 
-Chat rooms created only if peer exists.
+  - A typed message is converted into a voice message for the receiver (via Murf TextToSpeech).
+  - Hence,Making it useful for Mute People to send what they want to speak through text,but message will be delivered to receiver as if the sender is speaking.
 
-Optional request-accept flow before starting a conversation.
+- **Security check for rooms**: Prevents ghost rooms by verifying peer existence before creation.
 
-# UNIQUE FEATURES : What Makes My APP Different and Unique From Others
+- **Summarize and send**:
 
-Type a message → Receiver gets text + generated voice message (via Murf TextToSpeech).Hence,Making it useful for Mute People to send what they want to speak through text,but message will be delivered to receiver as if the sender is speaking.
+  - Upload a PDF, generate a summary, and send the summary instead of the full file (ideal for sharing articles,notes).
+  - Used Gemini AI to generate summary of not more than 300 words.
 
-Security Check before creating Room, To avoid Ghost Rooms (Rooms that have no reason to exist,reciever doesn't exist).
+- **Self-chat**: Personal room for storing notes and messages to self.
 
-Summarize and Send Option,User can upload a PDF and send summary of that pdf instead of pdf file.Useful for sending Articles etc.
+- **Auto-translate with Gemini AI**:
 
-Allows Personal Room for user to store or message to user itself (SELF-CHAT).
+  - Messages are automatically translated into the receiver’s preferred language.
+  - Receiver always hears messages in their own language.
+  - Example: User can send text in any language (ex.TELUGU, not supported by Murf AI)->used Gemini AI to detect the sender language and to Translate it into Receiver's Language.Hence receiver can receive and listen messages in his preferred language(Which is Set at the time of signup).
 
-AutoTranslate Using GEMINI AI,leveraged Gemini AI to translate user's message to language of reciever,so receiver always listens messages in his/her own language.
+- **Ensuring Message Delivery**: If Gemini AI translation fails, the original message is still delivered ,but in sender's language.
 
-Therefore User can send text in any language (ex.TELUGU, which is not available in Murf AI TTS)->used Gemini AI to detect the sender language and used Gemini AI to Translate it into Receiver's Language.Hence receiver can receive and listen messages in his preferred language(Which is Set at the time of signup).
+- **Multi-modal chat**: Every message exists as both text and audio.
 
-Incase of GEMINI AI Failure To translate receiver still recieves message (Ensuring Message Delivery)
+---
 
-Text + Audio → Every message has both forms.
+## Tech Stack
 
-It is a multi-modal chat app — not just text, but voice and file sharing too.
+- **Frontend**: Streamlit
+- **Backend**: Python
+- **Database**: MySQL
+- **Storage**: AWS S3 (files, images)
+- **Voice**: Murf TTS SDK
+- **Translation**: Gemini AI
 
-# Tech Stack
+---
 
-Frontend: Streamlit
+## Setup
 
-Backend: Python
+### Install dependencies
 
-Database: MySQL
+```bash
+pip install -r requirements.txt
+```
 
-Storage: AWS S3 (files, images)
+### Environment variables
 
-Voice: Murf TTS SDK
+Create a `.env` file with:
 
-# Setup
-
-Install dependencies
-
-pip install -U streamlit murf bcrypt python-dotenv mysql-connector-python boto3
-
-Set environment variables (in .env)
-
+```ini
 MURF_API_KEY=your_api_key
+
+GEMINI_API_KEY=your_gemini_api_key
+
+SQL_USER=your_db_user
+SQL_PWD=your_db_password
+SQL_DB=your_db_name
+SQL_HOST=your_db_host
+
 AWS_ACCESS_KEY_ID=your_aws_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
-AWS_BUCKET_NAME=your_bucket_name
-DB_HOST=localhost
-DB_USER=user
-DB_PASSWORD=password
-DB_NAME=dbname
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=your_aws_region
+AWS_BUCKET_NAME=your_aws_bucket_name
 
-Run app
+```
 
+### Run the app
+
+```bash
 streamlit run main.py
+```
+
+---
+
+## Live Demo
+
+[Live App Link](https://voicechatappformutists.streamlit.app/)
+
+---
+
+## Sample Credentials
+
+You can use the following test accounts to log in:
+
+- **User-1** :
+
+  - **Email**: one@gmail.com
+  - **Password**: Qwert@123
+
+- **User-2** :
+  - **Email**: two@gmail.com
+  - **Password**: Qwert@123
+
+(Or register a new account from the home screen.)
+
+---
