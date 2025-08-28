@@ -174,6 +174,7 @@ def main():
         st_autorefresh(interval=300000, key="chat_refresh")
 
         msgs = load_messages(room, me)
+        logger.info("[LOG] LOADING Messages")
         if not msgs:
             st.write("No messages yet. Start the conversation below!")
         else:
