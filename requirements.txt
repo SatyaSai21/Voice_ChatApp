@@ -1,0 +1,11 @@
+streamlit
+streamlit-autorefresh
+python-dotenv
+mysql-connector-python
+boto3
+bcrypt
+murf
+google-generativeai
+PyPDF2
+requests
+google-genai
