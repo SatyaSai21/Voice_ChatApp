@@ -40,10 +40,10 @@ def tts_to_bytes(client: Murf, text: str, voice_id: str, *,
         kwargs["pitch"] = pitch
     if pronunciation_dictionary:
         kwargs["pronunciation_dictionary"] = pronunciation_dictionary
-    print("--------00000000-------------")
+    #print("--------00000000-------------")
     res = client.text_to_speech.generate(**kwargs)
     encoded = getattr(res, "encoded_audio", None) or getattr(res, "encodedAudio", None)
     if not encoded:
         raise RuntimeError("Murf SDK did not return Base64 audio. Ensure encode_as_base_64=True is supported.")
-    print("--------11111111-------------")
+    #print("--------11111111-------------")
     return base64.b64decode(encoded)

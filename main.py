@@ -45,8 +45,7 @@ def main():
                     if ok:
                         st.session_state['user'] = user
                         st.success(msg)
-                        st.session_state["rerun"] = not st.session_state.get("rerun", False)
-                        st.stop()
+                        st.rerun()
                     else:
                         st.error(msg)
 
@@ -97,11 +96,11 @@ def main():
         preferred_lang = (st.session_state.get('user', {}) or {}).get('preferred_language', "en-US")
 
         audio_format = st.selectbox("Format", ["MP3", "WAV", "FLAC"], index=0)
-        sample_rate = st.selectbox("Sample rate", [24000, 44100, 48000], index=1)
+        sample_rate = st.selectbox("Sample rate", [8000,24000, 44100, 48000], index=1)
         channel_type = st.selectbox("Channel", ["MONO", "STEREO"], index=0)
         style = st.text_input("Style (optional)", value=None)
-        rate = st.slider("Rate (−100..+100)", min_value=-100, max_value=100, value=0)
-        pitch = st.slider("Pitch (−100..+100)", min_value=-100, max_value=100, value=0)
+        rate = st.slider("Rate (−50..+50)", min_value=-50, max_value=50, value=0)
+        pitch = st.slider("Pitch (−50..+50)", min_value=-50, max_value=50, value=0)
 
         st.divider()
         st.caption("Users & Room")

@@ -5,7 +5,7 @@
 import time
 
 from typing import Dict, List, Optional
-from user_helper import get_user
+from helpers.user_helper import get_user
 from database.db import get_db_connection
 
 def room_id_for(u1: str, u2: str) -> str:
