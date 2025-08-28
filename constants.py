@@ -1,0 +1,28 @@
+SUPPORTED_LANGUAGES = {
+    "en-US": "English (US)",
+    "en-GB": "English (UK)",
+    "en-AU": "English (Australia)",
+    "en-IN": "English (India)",
+    "en-SCOTT": "English (Scotland)",
+    "fr-FR": "French",
+    "de-DE": "German",
+    "es-ES": "Spanish (Spain)",
+    "es-MX": "Spanish (Mexico)",
+    "it-IT": "Italian",
+    "pt-BR": "Portuguese (Brazil)",
+    "nl-NL": "Dutch",    
+    "pl-PL": "Polish",
+    "tr-TR": "Turkish",
+    "ja-JP": "Japanese",
+    "id-ID": "Indonesia",
+    "ko-KR": "Korean",
+    "ro-RO": "Romanian",
+    "ta-IN": "Tamil",
+    "bn-IN": "Bengali",   
+    "bg-BG": "Bulagaria",
+    "zh-CN": "Chinese ",    
+    "hi-IN": "Hindi",    
+    "el-GR": "Greek",
+    "hr-HR": "Croatian"
+}
+#print(len(SUPPORTED_LANGUAGES.keys()))
