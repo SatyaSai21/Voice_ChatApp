@@ -1,4 +1,3 @@
----
 
 #### Voice Chat Messenger for Mute and Normal Users
 
@@ -134,5 +133,3 @@ You can use the following test accounts to log in:
   - **Password**: Qwert@123
 
 (Or register a new account from the home screen.)
-
----
