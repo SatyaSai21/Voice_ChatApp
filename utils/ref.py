@@ -2,9 +2,9 @@ import requests
 import os
 response = requests.get(
     "https://api.murf.ai/v1/speech/voices",
-    headers={"api-key": os.getenv("")}
+    headers={"api-key": os.getenv("MURF_API_KEY")}
 )
-#"ap2_ec86fbb2-c8ee-4cc0-845b-8396c807ac3c"
+
 voices = response.json()
 print(voices[0])
 for voice in voices:

@@ -4,7 +4,7 @@ import google.generativeai as generativeai
 
 class GeminiModel:
     def __init__(self, name="gemini-2.5-flash"):
-        generativeai.configure(api_key="AIzaSyDPnmPNs6PpUD0wf-pbRFTdxJInAVoiYZc")
+        generativeai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         self.model = generativeai.GenerativeModel(model_name=name)
 
     def SummarizeDoc(self, docData):

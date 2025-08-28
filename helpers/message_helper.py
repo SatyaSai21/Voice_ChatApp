@@ -6,7 +6,7 @@ import time
 
 from typing import Dict, List, Optional
 from user_helper import get_user
-from db import get_db_connection
+from database.db import get_db_connection
 
 def room_id_for(u1: str, u2: str) -> str:
     a, b = sorted([u1.strip().lower(), u2.strip().lower()])

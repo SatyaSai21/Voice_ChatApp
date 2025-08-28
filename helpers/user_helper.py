@@ -8,7 +8,7 @@ import mysql.connector
 
 from typing import Optional, Tuple
 
-from db import get_db_connection
+from database.db import get_db_connection
 
 
 def create_user(email: str, password: str, preferred_language: str, gender: str, preferred_voice: str, display_name: Optional[str] = None) -> Tuple[bool, str]:

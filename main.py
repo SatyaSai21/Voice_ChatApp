@@ -4,20 +4,20 @@ import os
 import time
 import streamlit as st
 from datetime import datetime
-from translator import GeminiModel
+from geminiAI.translator import GeminiModel
 from streamlit_autorefresh import st_autorefresh
 from constants import SUPPORTED_LANGUAGES
 from datetime import datetime
-from gemini import Gemini
+from geminiAI.gemini import Gemini
 from mysql.connector import Error
 from dotenv import load_dotenv
 load_dotenv()
 
-from db import init_db
-from user_helper import create_user,authenticate_user,get_user,get_user_language
-from message_helper import save_message,load_messages,peer_exists,list_inbox_for,room_id_for,ensure_room_exists
-from murf_helper import murf_client,tts_to_bytes
-from s3bucket import upload_file_to_s3
+from database.db import init_db
+from helpers.user_helper import create_user,authenticate_user,get_user,get_user_language
+from helpers.message_helper import save_message,load_messages,peer_exists,list_inbox_for,room_id_for,ensure_room_exists
+from helpers.murf_helper import murf_client,tts_to_bytes
+from utils.s3bucket import upload_file_to_s3
 
 # --------------------------
 # Streamlit UI
