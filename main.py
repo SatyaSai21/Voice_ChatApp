@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from database.db import init_db
+from logger_config import logger
 from helpers.user_helper import create_user,authenticate_user,get_user,get_user_language
 from helpers.message_helper import save_message,load_messages,peer_exists,list_inbox_for,room_id_for,ensure_room_exists
 from helpers.murf_helper import murf_client,tts_to_bytes
@@ -28,7 +29,7 @@ def main():
     st.title("🔊 Voice Chat Messenger (Murf TTS)")
     st.caption("Type a message and your friend receives both text and synthesized audio.")
 
-    print("[INFO] Initializing database...")
+    logger.info("[INFO] Initializing database...")
     init_db()
 
     # Keep selected peer in session for inbox -> open chat
@@ -43,7 +44,7 @@ def main():
                 login_password = st.text_input("Password", type="password", key="login_password")
                 if st.button("Log in"):
                     ok, user, msg = authenticate_user(login_email, login_password)
-                    print(f"[LOGIN] Attempt: {login_email}, Success: {ok}")
+                    logger.info(f"[LOGIN] Attempt: {login_email}, Success: {ok}")
                     if ok:
                         st.session_state['user'] = user
                         st.success(msg)
@@ -68,7 +69,7 @@ def main():
                     if reg_gender.lower() in ("female",):
                         default_voice = "en-US-natalie"
                         
-                    print(f"[REGISTER] New user: {reg_email}, Lang: {reg_language}, Gender: {reg_gender}")
+                    logger.info(f"[REGISTER] New user: {reg_email}, Lang: {reg_language}, Gender: {reg_gender}")
                     ok, msg = create_user(
                         reg_email,
                         reg_password,
@@ -78,16 +79,16 @@ def main():
                         reg_name
                     )
                     if ok:
-                        print("[REGISTER] Success")
+                        logger.info("[REGISTER] Success")
                         st.success(msg)
                     else:
-                        print("[REGISTER] Failed")
+                        logger.info("[REGISTER] Failed")
                         st.error(msg)
         else:
             user = st.session_state['user']
             st.success(f"Signed in as {user['display_name']} ({user['email']})")
             if st.button("Log out"):
-                print(f"[LOGOUT] {user['email']}")
+                logger.info(f"[LOGOUT] {user['email']}")
                 del st.session_state['user']
                 st.session_state["rerun"] = not st.session_state.get("rerun", False)
                 st.stop()
@@ -125,7 +126,7 @@ def main():
             if not inbox:
                 st.caption("No conversations yet.")
             else:
-                print(f"[INBOX] Loaded {len(inbox)} conversations for {me}")
+                logger.info(f"[INBOX] Loaded {len(inbox)} conversations for {me}")
                 for row in inbox:
                     peer_email = row["peer"]
                     unread = int(row["unread"] or 0)
@@ -134,7 +135,7 @@ def main():
                     if unread > 0:
                         line += f"  •  🔔 Unread: {unread}"
                     if st.button(f"Open chat: {line}", key=f"inbox_{peer_email}"):
-                        print(f"[CHAT] Opening conversation with {peer_email}")
+                        logger.info(f"[CHAT] Opening conversation with {peer_email}")
                         st.session_state["peer"] = peer_email
                         st.session_state["rerun"] = not st.session_state.get("rerun", False)
                         st.rerun()
@@ -144,7 +145,7 @@ def main():
 
         if me and peer:
             rid = room_id_for(me, peer)
-            print(f"[ROOM] Room check: me={me}, peer={peer}, rid={rid}")
+            logger.info(f"[ROOM] Room check: me={me}, peer={peer}, rid={rid}")
             st.write("Room:", f"`{rid}`" if rid else "Not a valid room")
 
     if 'user' not in st.session_state:
@@ -160,6 +161,7 @@ def main():
         return
 
     client = murf_client(os.getenv("MURF_API_KEY"))
+    logger.info("MURF CLIENT CREATED")
     left, right = st.columns([2, 1])
 
     with left:
@@ -234,16 +236,16 @@ def main():
                     if not peer_exists(peer):
                         st.error("Peer not found. Please ask your friend to register first.")
                         st.stop()
-                    print(f"[LOG] Sending text message to {peer} from {me}")
+                    logger.info(f"[LOG] Sending text message to {peer} from {me}")
                     # Detect sender language
                     detect_Response = GeminiAI.detect_language(text.strip())
                     sender_lang = detect_Response['response'] if detect_Response['Success'] else None
-                    print(f"[LOG] Detected sender language: {sender_lang}")
+                    logger.info(f"[LOG] Detected sender language: {sender_lang}")
                     
                     # Receiver preferred language (db stores locale code; mapping to human is in SUPPORTED_LANGUAGES)
                     recv_locale = get_user_language(peer) or "en-US"
                     receiver_lang = SUPPORTED_LANGUAGES.get(recv_locale, "English")
-                    print(f"[LOG] Receiver preferred language: {receiver_lang}")
+                    logger.info(f"[LOG] Receiver preferred language: {receiver_lang}")
 
                     translated_text = None
                     final_text = text.strip()
@@ -253,11 +255,11 @@ def main():
                         translated = GeminiAI.translate(final_text, sender_lang, receiver_lang)
                         if isinstance(translated, dict) and translated.get("Success") is False:
                             st.error(f"Translation failed: {translated.get('error')}")
-                            print(f"[ERROR] Translation failed: {translated.get('error')}")
+                            logger.error(f"[ERROR] Translation failed: {translated.get('error')}")
                         else:
                             translated_text = translated['response'] if isinstance(translated, dict) else str(translated)
                             final_text = translated_text.strip()
-                            print(f"[LOG] Translated text: {final_text}")
+                            logger.info(f"[LOG] Translated text: {final_text}")
 
                     # Convert final text to speech
                     audio_bytes = tts_to_bytes(
@@ -271,7 +273,7 @@ def main():
                         rate=rate,
                         pitch=pitch,
                     )
-                    print("[LOG] Generated audio bytes for TTS")
+                    logger.info("[LOG] Generated audio bytes for TTS")
 
                     # Save message (unread for receiver)
                     try:
@@ -289,11 +291,11 @@ def main():
                             file_path=None
                         )
                         st.success("Text Sent!")
-                        print("[LOG] Message saved to database successfully")
+                        logger.info("[LOG] Message saved to database successfully")
                         st.session_state["rerun"] = not st.session_state.get("rerun", False)
                         st.rerun()
                     except ValueError as e:
-                        print(f"[ERROR] Failed to save message: {str(e)}")
+                        logger.error(f"[ERROR] Failed to save message: {str(e)}")
                         st.error(str(e))
 
         # ------------------ IMAGE ------------------
@@ -307,7 +309,7 @@ def main():
                 for img in imgs:
                     filename = f"{uniqueIdentifier}_{img.name}"
                     file_bytes = img.read()
-                    print(f"[LOG] Uploading image {filename} to S3")
+                    logger.info(f"[LOG] Uploading image {filename} to S3")
                     
                     # Upload to S3 (public URL)
                     file_url = upload_file_to_s3(
@@ -315,10 +317,10 @@ def main():
                         key=f"messages/{room_id}/{filename}",
                         content_type=img.type  # e.g. image/png
                     )
-                    print(f"[LOG] Uploaded image to {file_url}")
+                    logger.info(f"[LOG] Uploaded image to {file_url}")
                     
                     save_message(room_id, me, peer, 'image', file_path=file_url)
-                    print("[LOG] Image message saved to DB")
+                    logger.info("[LOG] Image message saved to DB")
                     
                 st.success("Image Sent!")
                 st.session_state["rerun"] = not st.session_state.get("rerun", False)
@@ -336,7 +338,7 @@ def main():
                         st.stop()
                     filename = f"{uniqueIdentifier}_{file.name}"
                     file_bytes = file.read()
-                    print(f"[LOG] Uploading file {filename} to S3")
+                    logger.info(f"[LOG] Uploading file {filename} to S3")
                     
                     # Upload to S3
                     file_url = upload_file_to_s3(
@@ -344,10 +346,10 @@ def main():
                         key=f"messages/{room_id}/{filename}",
                         content_type=file.type  # application/pdf, text/plain, etc.
                     )
-                    print(f"[LOG] Uploaded file to {file_url}")
+                    logger.info(f"[LOG] Uploaded file to {file_url}")
                     
                     save_message(room_id, me, peer, 'file', file_path=file_url)
-                    print("[LOG] File message saved to DB")
+                    logger.info("[LOG] File message saved to DB")
                     
                     st.success("File Sent!")
                     st.session_state["rerun"] = not st.session_state.get("rerun", False)
@@ -362,15 +364,15 @@ def main():
                     reader = PdfReader(file)
                     pdf_text = " ".join([p.extract_text() or "" for p in reader.pages])
                     summary = GeminiAI.SummarizeDoc(pdf_text)
-                    print("[LOG] Extracted text from PDF")
+                    logger.info("[LOG] Extracted text from PDF")
 
                     if not summary.get("Success"):
-                        print("[ERROR] PDF summarization failed")
+                        logger.error("[ERROR] PDF summarization failed")
                         st.error("PDF summarization failed")
                         st.stop()
 
                     summary_text = summary['response']
-                    print(f"[LOG] Generated PDF summary: {summary_text[:100]}...")
+                    logger.info(f"[LOG] Generated PDF summary: {summary_text[:100]}...")
                     
                     audio_bytes = tts_to_bytes(
                         client,
@@ -383,7 +385,7 @@ def main():
                         rate=rate,
                         pitch=pitch,
                     )
-                    print("[LOG] Generated audio for PDF summary")
+                    logger.info("[LOG] Generated audio for PDF summary")
                     
                     # FUTURE IMPLEMENTATION
                     # # Upload original PDF to S3 (so chat keeps a reference to it)
@@ -410,7 +412,7 @@ def main():
                         audio_bytes=audio_bytes,
                         file_path=""
                     )
-                    print("[LOG] PDF summary message saved to DB")
+                    logger.info("[LOG] PDF summary message saved to DB")
 
                     st.success("PDF Summary Sent via Voice!")
                     st.session_state["rerun"] = not st.session_state.get("rerun", False)
