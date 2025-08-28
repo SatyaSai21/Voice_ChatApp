@@ -9,9 +9,9 @@ load_dotenv()
 
 DB_CONFIG = {
     "host": os.getenv("SQL_HOST"),
-    "user": os.getenv("SQL_USER"),
+    "user": os.getenv("SQL_USER","root"),
     "password":os.getenv("SQL_PWD"),
-    "database": "railway",
+    "database": os.getenv("SQL_DB","railway"),
     "port":14647
     
 }
